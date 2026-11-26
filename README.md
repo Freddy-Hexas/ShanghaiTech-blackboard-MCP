@@ -8,6 +8,12 @@
 
 当前版本：**0.3.1**。推荐使用 **Codex/ChatGPT**。项目包含 MCP 服务和可选插件包。
 
+## 适配进度
+
+- [x] ChatGPT/Codex
+- [ ] Claude Code
+- [ ] DeepSeek Desktop
+
 ## 功能概览
 
 - **课程查询**：列出注册课程、搜索课程、查看课程详情及明确的学期 ID。
