@@ -1,6 +1,10 @@
 # ShanghaiTech Blackboard MCP
 
-面向上海科技大学 Blackboard 的 MCP 服务。让 Codex 或其它 AI Agent 能够查询自己的课程、作业和截止时间，下载作业附件等。
+> **让 AI Agent 接入 Blackboard，从获取作业到辅助完成，少一些来回切换。**
+
+“看看这周有哪些作业，把附件下载好，带我分析一下题目。”接入 ShanghaiTech Blackboard MCP 后，你可以让 Codex 等 AI Agent 直接读取课程和作业要求、下载附件，再结合 Agent 自身的阅读、推理与编程能力，讲解题目、辅助解答或编写代码。配合定时任务，还能自动跟踪新作业、截止时间变化和新增课件，把反复打开网页查找信息的步骤交给自动化。
+
+本项目提供连接上海科技大学 Blackboard 的工具；资料获取由 MCP 完成，后续的解题与学习辅助由所连接的 Agent 承接。
 
 当前版本：**0.3.1**。推荐使用 **Codex/ChatGPT**。项目包含 MCP 服务和可选插件包。
 
