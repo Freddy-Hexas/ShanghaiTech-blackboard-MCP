@@ -255,9 +255,9 @@ MCP 负责“读取、比较、记录和确认”，**运行频率及通知由 C
 
 完整事件语义与确认规则见 [监控协议](docs/monitoring.md)。
 
-## 登录一次能维持多久
+## 登录一次能维持多久？
 
-本地会话文件可以跨进程、跨重启保存，**实际登录有效期由学校服务器决定，目前没有可承诺的小时数或天数**。
+本地会话文件可以跨进程、跨重启保存，**实际登录有效期由学校服务器决定，目前还未测得Cookie的时长**。
 
 定时访问可能影响服务器的空闲计时，但每 30 分钟查询一次不能保证 Cookie 永不过期。退出登录、服务端超时或认证策略变化都可能使会话失效。本项目不修改 Cookie 的到期时间，也没有自动重新登录功能。
 
@@ -280,22 +280,6 @@ Windows 下，专用 Cookie 缓存使用当前用户 DPAPI 保护，不能把文
 macOS 使用私有目录和文件权限保护本地缓存，没有额外实现 DPAPI 或磁盘加密。
 
 详见 [认证与会话](docs/authentication.md)。
-
-## Codex、ChatGPT 与 Dot 的接入区别
-
-| 场景 | 当前接入方式与边界 |
-| --- | --- |
-| 本机 Codex | 推荐项目级 STDIO 配置，由客户端启动 Python 服务 |
-| 本地插件 | 提供插件清单、MCP 声明和监控 Skill；安装方式取决于客户端 |
-| Streamable HTTP | 提供实验性的回环服务和独立 Bearer 令牌；尚有 Host/Origin 防护等待完善项 |
-| ChatGPT 网页 | 需要账户允许的远程 MCP 或 Secure MCP Tunnel 接入，并单独验证鉴权；不能直接读取本机 STDIO |
-| Dot | 需要确认实际执行电脑、工具连接及会话位置；在 Dot 浏览器登录不会自动导入此 MCP 的会话 |
-
-Dot 的云电脑和本机浏览器有各自的登录状态；调用连接的本机电脑时，该电脑需要在线且应用保持打开。[Dot 官方说明](https://learn.chatgpt.com/docs/dots/computers-and-apps)
-
-ChatGPT 的 Secure MCP Tunnel 是可评估的接入路线，仍受账户、工作区和隧道权限约束。本项目没有自动建立隧道或配置云端连接。[官方隧道接入说明](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels#connect-from-chatgpt)
-
-插件安装、其他客户端配置和实验性 HTTP 说明见 [接入文档](docs/integration.md)。当前没有 OAuth、多用户托管或可直接公开部署的完整服务；具体差距见 [已知限制](docs/limitations.md)。
 
 ## 配置说明
 
