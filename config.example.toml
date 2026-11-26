@@ -1,0 +1,38 @@
+[blackboard]
+base_url = "https://elearning.shanghaitech.edu.cn:8443"
+timezone = "Asia/Shanghai"
+# 跨课程作业、截止时间和监控的默认学期。通过课程工具取得实际 term_id。
+# 下列 ID 仅为格式示例；去掉注释前务必换成自己的实际值。
+# current_term_id = "_110_1"
+
+[auth]
+# 本项目专用目录，相对于本配置文件。不要指向 Chrome/Codex 等已有浏览器目录。
+profile_dir = ".auth/browser-profile"
+
+[downloads]
+# 下载位于 MCP 服务所在机器，相对于本配置文件；文件不自动执行或解压。
+# 默认：单文件 50 MiB、单次合计 200 MiB、最多 20 个文件。
+download_dir = "downloads"
+max_download_bytes = 52428800
+max_total_download_bytes = 209715200
+max_download_files = 20
+
+[network]
+timeout_seconds = 15
+max_retries = 2
+min_interval_seconds = 0.3
+max_pages = 20
+max_items = 2000
+
+[limits]
+max_depth = 12
+max_nodes = 1000
+max_courses = 20
+max_requests = 300
+tool_timeout_seconds = 180
+
+[probe]
+# 可选内置连接检查的范围，不决定 MCP 默认学期。
+# 仅在 config.local.toml 填写本人课程；未配置时只检查版本及注册分页。
+# course_id = "_1001_1"
+# parent_content_id = "_2001_1"

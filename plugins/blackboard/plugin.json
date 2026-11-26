@@ -1,0 +1,7 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "shanghaitech-blackboard",
+  "version": "0.3.1",
+  "description": "Read enrolled Blackboard courses and assignments, download assignment attachments, and monitor changes with acknowledged local snapshots.",
+  "keywords": ["blackboard", "courses", "assignments", "monitoring"]
+}

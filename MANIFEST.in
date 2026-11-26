@@ -1,0 +1,12 @@
+# Explicit source-distribution allowlist; local tests and data must never be bundled.
+# Reset setuptools' default file list, including automatically discovered tests.
+global-exclude *
+include README.md pyproject.toml MANIFEST.in config.example.toml
+include .gitignore .gitattributes
+include .agents/plugins/marketplace.json
+include scripts/configure_codex.py
+include plugins/blackboard/plugin.json plugins/blackboard/mcp.json
+include plugins/blackboard/skills/blackboard-monitor/SKILL.md
+include docs/api-reference.md docs/architecture.md docs/attachments.md
+include docs/authentication.md docs/integration.md docs/monitoring.md docs/limitations.md
+recursive-include src/blackboard_mcp *.py

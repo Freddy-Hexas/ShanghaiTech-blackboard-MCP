@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shanghaitech-blackboard-mcp"
+version = "0.3.1"
+description = "Local-first Blackboard MCP tools and acknowledged change monitoring"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "playwright==1.58.0",
+    "fastmcp==4.2.6",
+    "pydantic>=2.12,<3",
+    "beautifulsoup4>=4.13,<5",
+    "tzdata==2026.6",
+    "filelock>=3.16,<4",
+    "httpx>=0.28,<1",
+]
+
+[project.urls]
+Homepage = "https://github.com/Freddy-Hexas/ShanghaiTech-blackoard-MCP"
+Repository = "https://github.com/Freddy-Hexas/ShanghaiTech-blackoard-MCP"
+Issues = "https://github.com/Freddy-Hexas/ShanghaiTech-blackoard-MCP/issues"
+
+[project.scripts]
+blackboard-probe = "blackboard_mcp.cli:main"
+blackboard-mcp = "blackboard_mcp.server:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["blackboard_mcp", "blackboard_mcp.*"]
+namespaces = false
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

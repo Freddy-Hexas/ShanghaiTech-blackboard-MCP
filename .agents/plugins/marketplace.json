@@ -1,0 +1,12 @@
+{
+  "name": "shanghaitech-local",
+  "interface": {"displayName": "ShanghaiTech Local Tools"},
+  "plugins": [
+    {
+      "name": "shanghaitech-blackboard",
+      "source": {"source": "local", "path": "./plugins/blackboard"},
+      "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+      "category": "Productivity"
+    }
+  ]
+}

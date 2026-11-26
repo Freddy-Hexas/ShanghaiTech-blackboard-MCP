@@ -1,0 +1,57 @@
+# Credentials, sessions, and local research evidence
+.env
+.env.*
+!.env.example
+.auth/
+.local/
+browser-profile/
+storage_state*.json
+cookies*.json
+blackboard-session.dat
+.session-*
+config.local.*
+.codex/config.toml
+.codex/
+*.har
+*.log
+
+# Private course material and caches
+data/
+downloads/
+cache/
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db-*
+
+# Local tests, diagnostic scripts, and development reports (not published)
+/tests/
+/scripts/*
+!/scripts/configure_codex.py
+/docs/research-*.md
+/docs/validation-*.md
+/docs/mcp-requirements-audit-*.md
+/requirements-dev.lock.txt
+
+# Python / tools
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+.nox/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+build/
+dist/
+*.whl
+*.tar.gz
+.DS_Store
+Thumbs.db
