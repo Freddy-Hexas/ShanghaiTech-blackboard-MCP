@@ -12,7 +12,7 @@
 
 - [x] ChatGPT/Codex
 - [ ] Claude Code
-- [ ] DeepSeek Desktop
+- [ ] DeepSeek Harness
 
 ## 功能概览
 
