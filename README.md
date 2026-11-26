@@ -24,11 +24,15 @@
 3. 能访问学校 Blackboard 的网络环境。
 4. 支持启动本地 STDIO MCP 的客户端，例如 Codex。
 
-以下命令使用 **Windows PowerShell**，在项目根目录执行。Windows 是当前主要使用环境；代码包含 POSIX 权限处理，但 macOS/Linux 的完整安装、登录和客户端接入仍需在对应平台验证。
+下文并列提供 **Windows PowerShell** 和 **macOS Terminal（zsh/bash）** 命令。获取项目后，其余命令均在项目根目录执行。先确认 Windows 的 `python --version` 或 macOS 的 `python3 --version` 为 **3.11 或以上**；若默认命令版本较旧，请先安装新版 Python，并使用对应解释器创建虚拟环境，例如 macOS 的 `python3.11 -m venv .venv`。
+
+Windows 的虚拟环境命令位于 `.venv/Scripts/`，macOS 位于 `.venv/bin/`，无需激活环境。项目路径可以包含中文、空格或 emoji；在终端输入完整路径时加引号，例如 macOS 的 `cd "/path/to/课程资料 📚/ShanghaiTech-blackoard-MCP"`。参见 [Python 虚拟环境说明](https://docs.python.org/3/library/venv.html)。
 
 ## 快速开始
 
 ### 1. 获取项目并安装依赖
+
+**Windows · PowerShell**
 
 ~~~powershell
 git clone https://github.com/Freddy-Hexas/ShanghaiTech-blackoard-MCP.git
@@ -43,16 +47,41 @@ if (-not (Test-Path -LiteralPath config.local.toml)) {
 }
 ~~~
 
+**macOS · Terminal**
+
+~~~bash
+git clone https://github.com/Freddy-Hexas/ShanghaiTech-blackoard-MCP.git
+cd ShanghaiTech-blackoard-MCP
+
+python3 -m venv .venv
+./.venv/bin/python -m pip install -e .
+./.venv/bin/python -m playwright install chromium
+
+if [ ! -e config.local.toml ]; then
+    cp config.example.toml config.local.toml
+fi
+~~~
+
+`pip install -e .` 安装 Python 依赖后，仍需**单独执行 Chromium 安装命令**。已有 Chrome 或 Safari 不能替代本项目需要的 Playwright Chromium；更新 Playwright 后也可能需要重新安装配套浏览器。[Playwright 浏览器安装说明](https://playwright.dev/python/docs/browsers#install-browsers)
+
 仓库 URL 中的名称为 `ShanghaiTech-blackoard-MCP`，Python 包名为 `shanghaitech-blackboard-mcp`。
 
 不必激活虚拟环境；上面的命令直接使用项目自己的 Python。`config.local.toml` 是你的本机配置，已被 Git 忽略。已有环境或配置时，跳过相应创建步骤。
 
 ### 2. 在专用浏览器中登录
 
-在自己打开的交互式终端中运行：
+在自己打开的交互式终端中运行；macOS 请打开 **Terminal（终端）** 并进入项目目录：
+
+**Windows · PowerShell**
 
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe login
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe login
 ~~~
 
 程序会打开专用 Chromium 窗口。按学校正常流程完成登录，确认已进入 Blackboard 后，回到终端按 Enter。成功结果包含：
@@ -66,8 +95,16 @@ if (-not (Test-Path -LiteralPath config.local.toml)) {
 
 实际输出还包含注册记录数量等字段。可以再运行：
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe status
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe status
 ~~~
 
 `blackboard-probe` 是登录和连接检查入口，名称中的 probe 不代表需要额外的调试脚本。登录不通过 MCP 工具进行，也不需要把密码或 Cookie 发到聊天里。
@@ -76,8 +113,16 @@ if (-not (Test-Path -LiteralPath config.local.toml)) {
 
 ### 3. 生成 Codex 配置
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\python.exe scripts/configure_codex.py
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/python scripts/configure_codex.py
 ~~~
 
 脚本生成：
@@ -88,13 +133,13 @@ if (-not (Test-Path -LiteralPath config.local.toml)) {
 | `.local/plugins/blackboard/` | 绑定当前运行环境的插件副本 |
 | `.local/.agents/plugins/marketplace.json` | 本地插件目录索引 |
 
-这些文件均留在本机。脚本保留其他 Codex 设置；如果同名 MCP 条目已经存在，也会保留该条目。移动项目目录或重建虚拟环境后，需要检查其中的绝对路径。
+这些文件均留在本机。脚本保留其他 Codex 设置；如果同名 MCP 条目已经存在，也会保留该条目。对于已有 STDIO 配置，脚本会比较 `command`、`args` 和 `cwd` 与当前运行环境：不同则列出差异字段和当前路径的替换内容，方便项目搬家后刷新；不会自动覆盖自定义设置。虚拟环境不适合直接搬移，迁移项目后应先在新位置重建 `.venv`、安装依赖，再使用新环境运行配置脚本。[Python 虚拟环境迁移说明](https://docs.python.org/3/library/venv.html#how-venvs-work)
 
 随后在 Codex 中打开并信任这个项目，重新加载 MCP 或新建项目聊天。服务名是 `shanghaitech-blackboard`，应能发现 **14 个工具**。项目级配置只在受信任项目中加载，配置格式见 [Codex 官方 MCP 文档](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)。
 
-可以先说：
+登录、生成配置并在 Codex 中信任项目后，先调用连接检查工具；可以在聊天中说：
 
-> 检查 Blackboard 连接状态，再列出我的课程及其学期 ID。
+> 请调用 Blackboard MCP 的 get_connection_status 检查连接，成功后再列出我的课程及其学期 ID。
 
 MCP 连接成功时，`get_connection_status` 的结果应包含 `state="ok"`、`complete=true` 和 `data.authenticated=true`。
 
@@ -218,11 +263,21 @@ MCP 负责“读取、比较、记录和确认”，**运行频率及通知由 C
 
 看到 `login_required` 时，重新运行：
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe login
 ~~~
 
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe login
+~~~
+
 Windows 下，专用 Cookie 缓存使用当前用户 DPAPI 保护，不能把文件复制到另一台电脑或另一用户下就当作已登录。换执行环境时，应在新环境完成自己的登录流程。
+
+macOS 使用私有目录和文件权限保护本地缓存，没有额外实现 DPAPI 或磁盘加密。
 
 详见 [认证与会话](docs/authentication.md)。
 
@@ -263,8 +318,16 @@ ChatGPT 的 Secure MCP Tunnel 是可评估的接入路线，仍受账户、工�
 
 MCP 服务支持 `--config`；未指定时读取环境变量 `BLACKBOARD_CONFIG`，再回退到 `config.local.toml`。登录 CLI 默认使用当前目录的 `config.local.toml`；指定其他配置时把参数放在子命令前：
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe --config config.local.toml login
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe --config config.local.toml login
 ~~~
 
 ## 常见问题
@@ -272,7 +335,10 @@ MCP 服务支持 `--config`；未指定时读取环境变量 `BLACKBOARD_CONFIG`
 | 现象 | 处理方法 |
 | --- | --- |
 | 没有出现 MCP 工具 | 确认打开并信任了项目，运行配置脚本，检查 Python 绝对路径，再重新加载 MCP |
-| 登录浏览器无法启动 | 运行 `python -m playwright install chromium`，使用项目虚拟环境中的 Python |
+| 登录浏览器无法启动 | 单独安装 Chromium：Windows 用 `.\.venv\Scripts\python.exe -m playwright install chromium`；macOS 用 `./.venv/bin/python -m playwright install chromium` |
+| macOS 的 Python 版本低于 3.11 | 安装 Python 3.11+，用对应解释器创建 `.venv`，再安装依赖与 Chromium |
+| 搬家后提示 `Launch settings differ` | 使用新位置的虚拟环境运行配置脚本，将输出的 `command`、`args`、`cwd` 替换到已有同名条目，再重新加载 MCP；不要追加同名 TOML 段 |
+| emoji 路径下生成配置报 TOML 错误 | 更新到包含路径修复的脚本后重跑；脚本以 UTF-8 保留 Unicode 路径，不再生成 TOML 不接受的代理字符转义 |
 | `login_required` | 在交互式终端手动登录，确认使用与 MCP 相同的配置文件 |
 | `session_busy` | 等待另一项调用完成，或结束占用此专用会话的登录进程；不要强行删除锁 |
 | `scope_required` | 设置实际 `current_term_id`，或在调用时明确提供课程/学期 |

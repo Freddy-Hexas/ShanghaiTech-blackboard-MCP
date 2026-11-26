@@ -4,21 +4,33 @@
 
 先按 [README](../README.md#快速开始) 完成安装和手动登录，然后执行：
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\python.exe scripts/configure_codex.py
 ~~~
 
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/python scripts/configure_codex.py
+~~~
+
 脚本会生成 `.codex/config.toml`，记录当前 Python、配置文件和工作目录的绝对路径。启动超时为 30 秒，工具超时为 240 秒。
 
-在 Codex 中打开并信任项目，再重新加载 MCP 或新建项目聊天。检查服务 `shanghaitech-blackboard` 是否提供 14 个工具，然后调用 `get_connection_status`。项目级配置需要受信任项目，支持字段见 [官方 MCP 配置](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)。
+在 Codex 中打开并信任项目，再重新加载 MCP 或新建项目聊天。检查服务 `shanghaitech-blackboard` 是否提供 14 个工具，然后调用 `get_connection_status`。成功结果包含 `state="ok"`、`complete=true`、`data.authenticated=true`。项目级配置需要受信任项目，支持字段见 [官方 MCP 配置](https://learn.chatgpt.com/docs/extend/mcp?surface=cli)。
 
-配置脚本保留其他设置，也保留已有的同名 MCP 条目。它不会修改全局配置，不会自动安装插件或创建定时任务。移动目录、更换虚拟环境后，需要更新旧条目中的绝对路径。
+配置脚本保留其他设置，也保留已有的同名 MCP 条目。它不会修改全局配置，不会自动安装插件或创建定时任务。生成的 TOML 使用 UTF-8 原样保存 Unicode 路径，支持中文、空格和 emoji；引号、反斜杠仍正确转义。
+
+如果已有 STDIO 条目的 `command`、`args` 或 `cwd` 与当前运行环境不同，脚本会打印 `Launch settings differ`、差异字段及三项当前配置。项目搬家后，先在新位置重建虚拟环境并安装依赖，再用新环境运行脚本；将提示的三项替换到 `.codex/config.toml` 中已有的 `[mcp_servers.shanghaitech-blackboard]`，保留其他设置，不要追加重复段。重新加载 MCP 后再次调用 `get_connection_status`。已有 HTTP 条目不做本地启动路径比较。
 
 STDIO 进程由客户端启动。无需另外启动常驻 HTTP 服务，也不必提前在终端运行 `blackboard-mcp`。
 
 ## 其他 STDIO 客户端
 
 下面是通用启动参数示例，**所有路径都必须换成自己的安装位置**；不同客户端的外层配置格式可能不同：
+
+**Windows**
 
 ~~~json
 {
@@ -32,6 +44,25 @@ STDIO 进程由客户端启动。无需另外启动常驻 HTTP 服务，也不�
         "C:/path/to/ShanghaiTech-blackoard-MCP/config.local.toml"
       ],
       "cwd": "C:/path/to/ShanghaiTech-blackoard-MCP"
+    }
+  }
+}
+~~~
+
+**macOS**
+
+~~~json
+{
+  "mcpServers": {
+    "shanghaitech-blackboard": {
+      "command": "/path/to/ShanghaiTech-blackoard-MCP/.venv/bin/python",
+      "args": [
+        "-m",
+        "blackboard_mcp.server",
+        "--config",
+        "/path/to/ShanghaiTech-blackoard-MCP/config.local.toml"
+      ],
+      "cwd": "/path/to/ShanghaiTech-blackoard-MCP"
     }
   }
 }
@@ -61,11 +92,20 @@ STDIO 进程由客户端启动。无需另外启动常驻 HTTP 服务，也不�
 
 当前 HTTP 入口仅供本机接入验证：绑定 `127.0.0.1`，路径 `/mcp`，要求独立的 Bearer 令牌。**尚未补齐 Host/Origin 校验，也未实现 OAuth；当前配置不适合直接公开部署。** 见 [已知限制](limitations.md)。
 
-在自己的 PowerShell 终端运行：
+在自己的终端运行：
+
+**Windows · PowerShell**
 
 ~~~powershell
 $env:BLACKBOARD_MCP_TOKEN = & .\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(48))"
 .\.venv\Scripts\blackboard-mcp.exe --config config.local.toml --transport http --port 8765
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+export BLACKBOARD_MCP_TOKEN="$(./.venv/bin/python -c 'import secrets; print(secrets.token_urlsafe(48))')"
+./.venv/bin/blackboard-mcp --config config.local.toml --transport http --port 8765
 ~~~
 
 客户端地址为 `http://127.0.0.1:8765/mcp`，需要 `Authorization: Bearer <token>`。令牌不足 32 个字符时服务拒绝启动；不要使用学校 Cookie 充当此令牌。
@@ -80,7 +120,7 @@ startup_timeout_sec = 30
 tool_timeout_sec = 240
 ~~~
 
-客户端进程必须能读取与服务端相同的令牌环境变量。仅在一个 PowerShell 窗口设置变量，不会把它自动传给已启动的桌面应用。令牌不能写入 Git、URL 或聊天。
+客户端进程必须能读取与服务端相同的令牌环境变量。仅在一个 PowerShell/Terminal 窗口设置变量，不会把它自动传给已启动的桌面应用。令牌不能写入 Git、URL 或聊天。
 
 HTTP MCP 鉴权与 Blackboard 会话独立：前者通过，不代表后者仍有效。不同 Windows 用户不能复用同一 DPAPI 会话。
 

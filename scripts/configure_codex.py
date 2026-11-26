@@ -16,14 +16,34 @@ def main():
     old = destination.read_text(encoding="utf-8") if destination.exists() else ""
     parsed = tomllib.loads(old)
     name = "shanghaitech-blackboard"
+    launch = {
+        "command": sys.executable,
+        "args": ["-m", "blackboard_mcp.server", "--config", str(config)],
+        "cwd": str(root),
+    }
+    # TOML rejects JSON's surrogate-pair escapes for characters such as emoji.
+    launch_toml = (
+        f"command = {json.dumps(launch['command'], ensure_ascii=False)}\n"
+        f"args = {json.dumps(launch['args'], ensure_ascii=False)}\n"
+        f"cwd = {json.dumps(launch['cwd'], ensure_ascii=False)}\n"
+    )
     if name in parsed.get("mcp_servers", {}):
         print("Project MCP entry already exists; kept the existing configuration.")
+        existing = parsed["mcp_servers"][name]
+        # A deliberately configured HTTP connection has no local launch paths.
+        if "url" not in existing:
+            changed = [key for key, value in launch.items() if existing.get(key) != value]
+            if changed:
+                print("Launch settings differ from this checkout: " + ", ".join(changed))
+                print(
+                    f"If you moved the project or recreated its virtual environment, replace "
+                    f"command, args and cwd in [mcp_servers.{name}] in {destination} with:"
+                )
+                print(launch_toml, end="")
     else:
         entry = (
             f"\n[mcp_servers.{name}]\n"
-            f"command = {json.dumps(sys.executable)}\n"
-            f"args = {json.dumps(['-m', 'blackboard_mcp.server', '--config', str(config)])}\n"
-            f"cwd = {json.dumps(str(root))}\n"
+            f"{launch_toml}"
             "startup_timeout_sec = 30\n"
             "tool_timeout_sec = 240\n"
         )
@@ -38,8 +58,8 @@ def main():
     manifest_path = package / "mcp.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["mcpServers"][name].update(
-        command=sys.executable,
-        args=["-m", "blackboard_mcp.server", "--config", str(config)],
+        command=launch["command"],
+        args=launch["args"],
     )
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     marketplace = json.loads(

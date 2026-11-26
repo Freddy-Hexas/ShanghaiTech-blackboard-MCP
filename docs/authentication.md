@@ -4,24 +4,50 @@
 
 本项目使用独立的 Playwright Chromium 目录完成手动登录，不读取 Codex 侧边浏览器、Chrome、Edge 或 Dot 浏览器的 Cookie。安装步骤见 [README](../README.md#快速开始)。
 
-在项目根目录、自己打开的交互式终端执行：
+在项目根目录、自己打开的交互式终端执行。macOS 使用 Terminal（终端）；两种系统均需先按 README 创建 Python 3.11+ 虚拟环境并单独安装 Playwright Chromium。
+
+**Windows · PowerShell**
 
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe login
 ~~~
 
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe login
+~~~
+
 专用窗口打开后，完成学校正常登录流程，再回到终端按 Enter。程序通过本人课程注册接口验证身份，成功时输出 `state=authenticated`、`session_saved=true` 等状态。
+
+**Windows · PowerShell**
 
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe status
 ~~~
 
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe status
+~~~
+
 `status` 会新建浏览器上下文，验证保存的会话是否仍然可用，不会要求你在聊天中提供凭证。CLI 成功时退出码为 0；认证、配置或网络等错误返回 2。MCP 的连接检查则使用 `get_connection_status`。
+
+完成 Terminal/PowerShell 登录后，再运行配置脚本，在 Codex 中打开并信任项目，重新加载 MCP，最后调用 `get_connection_status`。CLI 登录成功与 Codex 已加载服务是两个步骤，具体见 [接入说明](integration.md)。
 
 指定配置文件时，`--config` 必须放在子命令前：
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe --config config.local.toml login
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe --config config.local.toml login
 ~~~
 
 登录 CLI 默认读取当前目录的 `config.local.toml`。MCP 服务另支持 `BLACKBOARD_CONFIG` 环境变量；两者必须指向同一份配置，才能使用同一个会话目录。
@@ -40,7 +66,7 @@ API、课程页面和附件下载共用同一个 HTTP Cookie jar。确认身份�
 
 - 仅使用空目录或本项目已标记的专用目录，不采用其他浏览器的现有 Profile。
 - Windows 为目录设置当前用户访问权限；Cookie 缓存 `blackboard-session.dat` 使用当前用户 DPAPI 保护。
-- POSIX 使用私有目录和文件权限，**没有实现额外的磁盘加密**。
+- macOS 等 POSIX 系统使用私有目录和文件权限，**没有实现额外的磁盘加密**。
 - 专用 Cookie 缓存与完整 Blackboard origin 绑定，包括端口。其他 SSO 站点的 Cookie 不导出到该缓存。
 - 浏览器 Profile 可能包含正常登录流程产生的浏览器数据，整个目录都应保持私有；不能把单个缓存文件的加密等同于整个目录加密。
 - 不保存账号密码到项目配置，不在工具结果或终端中输出 Cookie 值。
@@ -70,8 +96,16 @@ Dot 云浏览器、连接的本机浏览器和本项目 Playwright Profile 各�
 
 CLI 还保留一个有界 API 检查命令，便于确认部署环境：
 
+**Windows · PowerShell**
+
 ~~~powershell
 .\.venv\Scripts\blackboard-probe.exe probe
+~~~
+
+**macOS · Terminal**
+
+~~~bash
+./.venv/bin/blackboard-probe probe
 ~~~
 
 没有配置 `[probe].course_id` 时，只检查系统版本和本人注册分页；配置了实际课程及父目录 ID 后，还会检查相应课程、内容、子项和评分列。这是有限样本检查，不能代表整个学期都已完整扫描，也不决定 MCP 监控范围。
